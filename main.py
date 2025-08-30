@@ -46,8 +46,10 @@ def open_page(driver, url):
         try:
             tmp_text = item.find_element(By.CLASS_NAME, 'wants-card__description-text').get_attribute('innerHTML')
             tmp_text_arr = BeautifulSoup(tmp_text, 'html.parser').get_text().split('...\xa0Показать полностью ')
-            assert len(tmp_text_arr) == 2
-            obj['text'] = tmp_text_arr[1].split('\xa0Скрыть ')[0].split('\n')
+            if len(tmp_text_arr) == 2:
+                obj['text'] = tmp_text_arr[1].split('\xa0Скрыть ')[0].split('\n')
+            else:
+                obj['text'] = tmp_text_arr[0].split('\n')
         except NoSuchElementException:
             obj['text'] = None
         # заказчик
