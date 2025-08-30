@@ -3,7 +3,6 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import os
-import time
 import yaml
 import datetime
 
@@ -69,14 +68,16 @@ arr_to_dict = lambda a: {'id_' + v['link'].split('/')[-1]: v for v in a}
 
 def main():
     glob_arr = dict_to_arr( read_yml() )
-    print(glob_arr)
+    print('start with ' + str(len(glob_arr)))
     driver = webdriver.Firefox()
-    for i in [1]: #range(1, 100):
+    for i in range(1, 100):
         url = f'https://kwork.ru/projects?page={i}'
         local_arr, next_page = open_page(driver, url)
         glob_arr += local_arr
+        print(f'page {i} done')
     driver.close()
     write_yml( arr_to_dict(glob_arr) )
+    print('end with ' + str(len(glob_arr)))
 
 if __name__ == '__main__':
     main()
