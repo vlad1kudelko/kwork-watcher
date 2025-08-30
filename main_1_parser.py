@@ -16,7 +16,8 @@ import datetime
 #   payer_link:     str
 #   payer_login:    str
 #   payer_all:      arr(str)
-#   informers:      arr(str)
+#   stay:           str
+#   reaction:       str
 
 dirname = os.path.dirname(__file__)
 os.system(f'mkdir -p "{dirname}/out"')
@@ -37,6 +38,30 @@ def write_yml(data):
     full_path = get_fullname()
     with open(full_path, 'w') as f:
         yaml.safe_dump(data, f, encoding='utf-8', allow_unicode=True)
+
+def parser_info_stay(inp_arr):
+    for item in inp_arr:
+        if not item.startswith('Осталось: '):
+            continue
+        txt = item.split('Осталось: ')[1].split('.')
+        ret = { 'days': 0, 'hours': 0, 'minutes': 0, 'seconds': 0 }
+        for tok in txt:
+            if tok.endswith(' д'):
+                ret['days'] += int(tok[:-2])
+            if tok.endswith(' ч'):
+                ret['hours'] += int(tok[:-2])
+            if tok.endswith(' мин'):
+                ret['minutes'] += int(tok[:-4])
+            if tok.endswith(' сек'):
+                ret['seconds'] += int(tok[:-4])
+        f = lambda x: str(x).rjust(2, '0')
+        return f'{ret['days']} {f(ret['hours'])}:{f(ret['minutes'])}:{f(ret['seconds'])}'
+
+def parser_info_reaction(inp_arr):
+    for item in inp_arr:
+        if not item.startswith('Предложений: '):
+            continue
+        return item.split('Предложений: ')[1]
 
 def open_page(driver, url):
     ret = []
@@ -71,7 +96,9 @@ def open_page(driver, url):
         obj['payer_login'] = payer_login.text
         obj['payer_all'] = payer.text.split('\n')
         # сроки и отклики
-        obj['informers'] = item.find_element(By.CLASS_NAME, 'want-card__informers-row').text.split('\n')
+        informers = item.find_element(By.CLASS_NAME, 'want-card__informers-row').text.split('\n')
+        obj['stay'] = parser_info_stay(informers)
+        obj['reaction'] = parser_info_reaction(informers)
         # сохраняем
         ret.append(obj)
     next_page = len(driver.find_elements(By.CLASS_NAME, 'pagination__arrow--next')) > 0
