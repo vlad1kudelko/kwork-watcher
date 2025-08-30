@@ -1,0 +1,4 @@
+services:
+  kwork_watcher:
+    build: .
+    restart: unless-stopped
