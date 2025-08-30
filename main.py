@@ -76,9 +76,9 @@ def main():
         url = f'https://kwork.ru/projects?page={i}'
         local_arr, next_page = open_page(driver, url)
         glob_arr += local_arr
+        write_yml( arr_to_dict(glob_arr) )
         print(f'page {i} done')
     driver.close()
-    write_yml( arr_to_dict(glob_arr) )
     print('end with ' + str(len(glob_arr)))
 
 if __name__ == '__main__':
