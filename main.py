@@ -6,6 +6,18 @@ import os
 import yaml
 import datetime
 
+# структура данных
+# id_[id проекта]:
+#   link:           str
+#   h1:             str
+#   price_main:     str
+#   price_sub:      str
+#   text:           arr(str)
+#   payer_link:     str
+#   payer_login:    str
+#   payer_all:      arr(str)
+#   informers:      arr(str)
+
 dirname = os.path.dirname(__file__)
 os.system(f'mkdir -p "{dirname}/out"')
 
