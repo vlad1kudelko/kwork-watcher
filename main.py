@@ -78,6 +78,8 @@ def main():
         glob_arr += local_arr
         write_yml( arr_to_dict(glob_arr) )
         print(f'page {i} done')
+        if next_page == False:
+            break
     driver.close()
     print('end with ' + str(len(glob_arr)))
 
