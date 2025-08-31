@@ -1,4 +1,11 @@
 services:
-  kwork_watcher:
-    build: .
+  se_firefox:
+    image: selenium/standalone-firefox
+    ports:
+      - 4444:4444
+      - 7900:7900
     restart: unless-stopped
+
+  # kwork_watcher:
+    # build: .
+    # restart: unless-stopped

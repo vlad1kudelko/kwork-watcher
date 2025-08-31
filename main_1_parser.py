@@ -7,6 +7,8 @@ import datetime
 import os
 import yaml
 
+SELENIUM_URL = 'http://127.0.0.1:4444/wd/hub'
+
 # структура данных
 # id_[id проекта]:
 #   link:           str
@@ -109,31 +111,33 @@ dict_to_arr = lambda d: [v for k, v in d.items()]
 arr_to_dict = lambda a: {'id_' + v['link'].split('/')[-1]: v for v in a}
 
 def main():
-    glob_arr = dict_to_arr( read_yml() )  # все спаршенные проекты (ниже по коду могут быть повторы)
-    old_count = len(glob_arr)             # количество спаршенных проектов c прошлого раза
-    print(f'start with {old_count}')
-    options = Options()
-    options.add_argument('--headless')
-    driver = webdriver.Firefox(options=options)
-    for i in range(1, 100):
-        url = f'https://kwork.ru/projects?page={i}'
-        local_arr, next_page = open_page(driver, url)  # массив со спаршенными проектами и признаком наличия следующей страницы
-        glob_arr += local_arr                          # добавляем спаршенные проекты (повторы могут появиться здесь)
-        new_dict = arr_to_dict(glob_arr)               # преобразуем в словарь для сохранения (тут повторы сворачиваются)
-        new_count = len(new_dict.keys())               # суммарное количество проектов без повторов
-        write_yml( new_dict )
-        print(' '.join([
-            'page:',
-            str(i).rjust(2, ' '),
-            '-',
-            str(new_count).rjust(4, ' '),
-            f'(+{new_count - old_count})',
-        ]))
-        old_count = new_count
-        if next_page == False:
-            break
-    driver.close()
-    print(f'end with {old_count}')
+    try:
+        glob_arr = dict_to_arr( read_yml() )  # все спаршенные проекты (ниже по коду могут быть повторы)
+        old_count = len(glob_arr)             # количество спаршенных проектов c прошлого раза
+        print(f'start with {old_count}')
+        driver = webdriver.Remote(
+            command_executor=SELENIUM_URL,
+            options=webdriver.FirefoxOptions())
+        for i in range(1, 100):
+            url = f'https://kwork.ru/projects?page={i}'
+            local_arr, next_page = open_page(driver, url)  # массив со спаршенными проектами и признаком наличия следующей страницы
+            glob_arr += local_arr                          # добавляем спаршенные проекты (повторы могут появиться здесь)
+            new_dict = arr_to_dict(glob_arr)               # преобразуем в словарь для сохранения (тут повторы сворачиваются)
+            new_count = len(new_dict.keys())               # суммарное количество проектов без повторов
+            write_yml( new_dict )
+            print(' '.join([
+                'page:',
+                str(i).rjust(2, ' '),
+                '-',
+                str(new_count).rjust(4, ' '),
+                f'(+{new_count - old_count})',
+            ]))
+            old_count = new_count
+            if next_page == False:
+                break
+        print(f'end with {old_count}')
+    finally:
+        driver.quit()
 
 if __name__ == '__main__':
     main()
