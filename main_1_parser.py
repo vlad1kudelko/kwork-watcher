@@ -2,9 +2,10 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+import datetime
 import os
 import yaml
-import datetime
 
 # структура данных
 # id_[id проекта]:
@@ -110,7 +111,9 @@ arr_to_dict = lambda a: {'id_' + v['link'].split('/')[-1]: v for v in a}
 def main():
     glob_arr = dict_to_arr( read_yml() )
     print('start with ' + str(len(glob_arr)))
-    driver = webdriver.Firefox()
+    options = Options()
+    options.add_argument('--headless')
+    driver = webdriver.Firefox(options=options)
     for i in range(1, 100):
         url = f'https://kwork.ru/projects?page={i}'
         local_arr, next_page = open_page(driver, url)
