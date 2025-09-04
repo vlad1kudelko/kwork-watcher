@@ -23,13 +23,6 @@
         loading = false;
     }
 
-    function rm_txt (txt) {
-        if (txt === null) { return ''; }
-        if (txt.includes(': ')) {
-            return txt.split(': ')[1];
-        } else { return txt; }
-    };
-
     function set_sort(field) {
         sort_field = field;
         // off -> enable/asc -> enable/desc -> off
@@ -88,8 +81,8 @@
         <div class="grid grid-cols-19">
             <div class="p-2 border border-gray-400 col-span-1" ><a href={project.link}>link</a></div>
             <div class="p-2 border border-gray-400 col-span-2" >{project.h1}</div>
-            <div class="p-2 border border-gray-400 col-span-1" >{rm_txt(project.price_main)}</div>
-            <div class="p-2 border border-gray-400 col-span-1" >{rm_txt(project.price_sub)}</div>
+            <div class="p-2 border border-gray-400 col-span-1" >{project.price_main}</div>
+            <div class="p-2 border border-gray-400 col-span-1" >{project.price_sub}</div>
             <div class="p-2 border border-gray-400 col-span-10">{project.text}</div>
             <div class="p-2 border border-gray-400 col-span-1" >{project.stay}</div>
             <div class="p-2 border border-gray-400 col-span-1" >{project.reaction}</div>

@@ -6,6 +6,13 @@ import yaml
 PROJECTS_ALL = []
 
 route = APIRouter()
+
+#--------------------------------------------------------------------
+def rm_txt(txt):
+    if txt:
+        if ': ' in txt:
+            return txt.split(': ')[1]
+    return txt
 #--------------------------------------------------------------------
 def test_date(inp_date):
     inp_date = inp_date[:10]
@@ -27,6 +34,8 @@ def update_projects_all():
             projects_day = yaml.safe_load(f)
             for project_key in projects_day.keys():
                 project = projects_day[project_key]
+                project['price_main'] = rm_txt(project['price_main'])
+                project['price_sub']  = rm_txt(project['price_sub'])
                 if project['link'] not in [item['link'] for item in projects_all]:
                     projects_all.append(project)
                     projects_all[-1]['date'] = history_all[project['link']].split('+')[0] if project['link'] in history_all else date
