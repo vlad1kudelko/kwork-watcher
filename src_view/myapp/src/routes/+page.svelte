@@ -62,7 +62,7 @@
 
     onMount(() => {
         api_all();
-        setInterval(() => api_all(), 30000);
+        setInterval(() => update_all(), 30*1000);
     });
 </script>
 
