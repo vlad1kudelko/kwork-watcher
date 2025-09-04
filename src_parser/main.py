@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from zoneinfo import ZoneInfo
 import datetime
 import os
 import time
@@ -16,7 +17,7 @@ SELENIUM_URL = os.environ['SELENIUM_URL']
 #   h1:             str
 #   price_main:     str
 #   price_sub:      str
-#   text:           arr(str)
+#   text:           str
 #   payer_link:     str
 #   payer_login:    str
 #   payer_all:      arr(str)
@@ -27,7 +28,7 @@ dirname = os.path.dirname(__file__)
 os.system(f'mkdir -p "{dirname}/out"')
 
 def dt():
-    return datetime.datetime.now().isoformat()
+    return datetime.datetime.now(ZoneInfo('Asia/Irkutsk')).isoformat()
 
 def get_fullname(name=''):
     if name == '':
@@ -49,17 +50,14 @@ def write_yml(data):
     with open(full_path, 'w') as f:
         yaml.safe_dump(data, f, encoding='utf-8', allow_unicode=True)
 
-def test_history(test_key):
+def test_history(test_link):
     full_path = get_fullname('history')
-    history_arr = []
+    history_arr = {}
     if os.path.exists(full_path):
         with open(full_path) as f:
             history_arr = yaml.safe_load(f)
-    if test_key not in [x['key'] for x in history_arr]:
-        history_arr.append({
-            'date': dt(),
-            'key': test_key,
-        })
+    if test_link not in history_arr:
+        history_arr[test_link] = dt()
         with open(full_path, 'w') as f:
             yaml.safe_dump(history_arr, f, encoding='utf-8', allow_unicode=True)
             return True
@@ -113,6 +111,7 @@ def open_page(driver, url):
                 obj['text'] = tmp_text_arr[1].split('\xa0Скрыть ')[0].split('\n')
             else:
                 obj['text'] = tmp_text_arr[0].split('\n')
+            obj['text'] = ' '.join(obj['text'])
         except NoSuchElementException:
             obj['text'] = None
         # заказчик
@@ -127,7 +126,7 @@ def open_page(driver, url):
         obj['reaction'] = parser_info_reaction(informers)
         # сохраняем
         ret.append(obj)
-        test_history(get_key(obj))
+        test_history(obj['link'])
     next_page = len(driver.find_elements(By.CLASS_NAME, 'pagination__arrow--next')) > 0
     return (ret, next_page)
 
