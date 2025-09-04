@@ -1,10 +1,18 @@
 from fastapi import APIRouter
+import datetime
 import os
 import yaml
 
 PROJECTS_ALL = []
 
 route = APIRouter()
+#--------------------------------------------------------------------
+def test_date(inp_date):
+    inp_date = inp_date[:10]
+    now = datetime.datetime.now()
+    inp = datetime.datetime.strptime(inp_date, '%Y-%m-%d')
+    delta = now - inp
+    return delta.days
 #--------------------------------------------------------------------
 def update_projects_all():
     days_yml = os.listdir('out')
@@ -26,6 +34,7 @@ def update_projects_all():
                     projects_all_key = [projects_all.index(i) for i in projects_all if i['link'] == project['link']][0]
                     projects_all[projects_all_key]['date'] = date
                     projects_all[projects_all_key]['dates_file'].append(date)
+    projects_all = list(filter(lambda x: test_date(x['date']) <= 2, projects_all))
     return projects_all
 #--------------------------------------------------------------------
 @route.get('/update')
@@ -38,3 +47,5 @@ async def update():
 async def all():
     return PROJECTS_ALL
 #--------------------------------------------------------------------
+
+PROJECTS_ALL = update_projects_all()
