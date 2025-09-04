@@ -1,6 +1,8 @@
 services:
   src_view:
     build: .
-    restart: unless-stopped
+    volumes:
+      - ../out:/home/user/out
     ports:
       - 8000:8000
+    restart: unless-stopped
