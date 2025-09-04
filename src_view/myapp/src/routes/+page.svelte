@@ -3,8 +3,8 @@
 
     let projects_all = [];
     let loading = false;
-    let sort_field = '';
-    let sort_enable = false;
+    let sort_field = 'date';
+    let sort_enable = true;
     let sort_asc = false;
 
     async function api_update() {
@@ -62,7 +62,7 @@
 
     onMount(() => {
         api_all();
-        setInterval(() => update_all(), 30*1000);
+        setInterval(() => api_update(), 30*1000);
     });
 </script>
 
