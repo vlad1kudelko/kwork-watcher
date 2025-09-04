@@ -1,11 +1,17 @@
 services:
   se_firefox:
     image: selenium/standalone-firefox
+    shm_size: 2g
     ports:
       - 4444:4444
-      - 7900:7900
     restart: unless-stopped
 
-  # kwork_watcher:
-    # build: .
-    # restart: unless-stopped
+  kwork_watcher:
+    build: ./src_parser
+    volumes:
+      - ./out:/home/user/out
+    environment:
+      SELENIUM_URL: se_firefox:4444/wd/hub
+    restart: unless-stopped
+    depends_on:
+      - se_firefox

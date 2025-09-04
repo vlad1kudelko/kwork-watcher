@@ -7,7 +7,7 @@ import datetime
 import os
 import yaml
 
-SELENIUM_URL = 'http://127.0.0.1:4444/wd/hub'
+SELENIUM_URL = os.environ['SELENIUM_URL']
 
 # структура данных
 # id_[id проекта]:
@@ -140,4 +140,8 @@ def main():
         driver.quit()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        #  print(e)
+        print('ERROR неожиданная ошибка')
