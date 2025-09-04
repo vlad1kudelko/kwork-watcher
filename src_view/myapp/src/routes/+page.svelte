@@ -3,6 +3,9 @@
 
     let projects_all = [];
     let loading = false;
+    let sort_field = '';
+    let sort_enable = false;
+    let sort_asc = false;
 
     async function api_update() {
         loading = true;
@@ -27,8 +30,39 @@
         } else { return txt; }
     };
 
+    function set_sort(field) {
+        sort_field = field;
+        // off -> enable/asc -> enable/desc -> off
+        if (!sort_enable) {
+            sort_enable = true;
+            sort_asc = true;
+        } else { if (sort_asc) { sort_asc = false; } else { sort_enable = false; } }
+    }
+
+    function tbl_sort(field) {
+        if ((sort_enable) && (sort_field === field)) {
+            return sort_asc ? '▲' : '▼';
+        }
+        return '';
+    }
+
+    function get_sort(arr, field, enable, asc) {
+        if (enable) {
+            return [...arr].sort((a, b) => {
+                if (typeof(a[field]) === 'number') {
+                    if (asc) { return a[field] -             b[field];  } else { return b[field] -             a[field];  }
+                } else {
+                    if (asc) { return a[field].localeCompare(b[field]); } else { return b[field].localeCompare(a[field]); }
+                }
+            });
+        } else {
+            return arr;
+        }
+    }
+
     onMount(() => {
         api_all();
+        setInterval(() => api_all(), 30000);
     });
 </script>
 
@@ -46,11 +80,11 @@
         <div class="p-2 border border-gray-400 col-span-1" >Цена осн.</div>
         <div class="p-2 border border-gray-400 col-span-1" >Цена доп.</div>
         <div class="p-2 border border-gray-400 col-span-10">Описание</div>
-        <div class="p-2 border border-gray-400 col-span-1" on:click={projects_all = projects_all.sort((a, b) => b.stay - a.stay)}>Осталось</div>
-        <div class="p-2 border border-gray-400 col-span-1" on:click={projects_all = projects_all.sort((a, b) => b.reaction - a.reaction)}>Предложений</div>
-        <div class="p-2 border border-gray-400 col-span-2" on:click={projects_all = projects_all.sort((a, b) => b.date - a.date)}>Дата</div>
+        <div class="p-2 border border-gray-400 col-span-1" on:click={() => set_sort('stay')}>Осталось {tbl_sort('stay')}</div>
+        <div class="p-2 border border-gray-400 col-span-1" on:click={() => set_sort('reaction')}>Предл. {tbl_sort('reaction')}</div>
+        <div class="p-2 border border-gray-400 col-span-2" on:click={() => set_sort('date')}>Дата {tbl_sort('date')}</div>
     </div>
-    {#each projects_all as project}
+    {#each get_sort(projects_all, sort_field, sort_enable, sort_asc) as project}
         <div class="grid grid-cols-19">
             <div class="p-2 border border-gray-400 col-span-1" ><a href={project.link}>link</a></div>
             <div class="p-2 border border-gray-400 col-span-2" >{project.h1}</div>
