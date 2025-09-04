@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 import datetime
 import os
+import time
 import yaml
 
 SELENIUM_URL = os.environ['SELENIUM_URL']
@@ -25,8 +26,14 @@ SELENIUM_URL = os.environ['SELENIUM_URL']
 dirname = os.path.dirname(__file__)
 os.system(f'mkdir -p "{dirname}/out"')
 
-def get_fullname():
-    filename = datetime.datetime.now().isoformat()[:10]
+def dt():
+    return datetime.datetime.now().isoformat()
+
+def get_fullname(name=''):
+    if name == '':
+        filename = dt()[:10]
+    else:
+        filename = name
     full_path = f'{dirname}/out/{filename}.yml'
     return full_path
 
@@ -41,6 +48,22 @@ def write_yml(data):
     full_path = get_fullname()
     with open(full_path, 'w') as f:
         yaml.safe_dump(data, f, encoding='utf-8', allow_unicode=True)
+
+def test_history(test_key):
+    full_path = get_fullname('history')
+    history_arr = []
+    if os.path.exists(full_path):
+        with open(full_path) as f:
+            history_arr = yaml.safe_load(f)
+    if test_key not in [x['key'] for x in history_arr]:
+        history_arr.append({
+            'date': dt(),
+            'key': test_key,
+        })
+        with open(full_path, 'w') as f:
+            yaml.safe_dump(history_arr, f, encoding='utf-8', allow_unicode=True)
+            return True
+    return False
 
 def parser_info_stay(inp_arr):
     for item in inp_arr:
@@ -104,11 +127,13 @@ def open_page(driver, url):
         obj['reaction'] = parser_info_reaction(informers)
         # сохраняем
         ret.append(obj)
+        test_history(get_key(obj))
     next_page = len(driver.find_elements(By.CLASS_NAME, 'pagination__arrow--next')) > 0
     return (ret, next_page)
 
+get_key     = lambda x: 'id_' + x['link'].split('/')[-1]
 dict_to_arr = lambda d: [v for k, v in d.items()]
-arr_to_dict = lambda a: {'id_' + v['link'].split('/')[-1]: v for v in a}
+arr_to_dict = lambda a: {get_key(v): v for v in a}
 
 def main():
     try:
@@ -140,8 +165,10 @@ def main():
         driver.quit()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-        #  print(e)
-        print('ERROR неожиданная ошибка')
+    while True:
+        try:
+            main()
+        except Exception as e:
+            #  print(e)
+            print('ERROR неожиданная ошибка')
+        time.sleep(5)
