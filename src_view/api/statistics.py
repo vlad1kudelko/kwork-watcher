@@ -77,7 +77,7 @@ def keywords():
             # цикл по проектам
             for key_project, item_project in projects_day.items():
                 # цикл по словам
-                for item_word in re.split(r'[.,!?;:()/\s]+', item_project['text']):
+                for item_word in re.split(r'[.,!?;:()/-\s]+', item_project['text']):
                     item_word = item_word.lower()
                     if len(item_word) < 2:
                         continue
