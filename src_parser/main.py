@@ -79,7 +79,7 @@ def parser_info_stay(inp_arr):
             if tok.endswith(' сек'):
                 ret['seconds'] += int(tok[:-4])
         f = lambda x: str(x).rjust(2, '0')
-        return f'{ret['days']} {f(ret['hours'])}:{f(ret['minutes'])}:{f(ret['seconds'])}'
+        return f'{f(ret['days'])} {f(ret['hours'])}:{f(ret['minutes'])}:{f(ret['seconds'])}'
 
 def parser_info_reaction(inp_arr):
     for item in inp_arr:
