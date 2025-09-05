@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 import datetime
 import os
+import re
 import yaml
 
 PROJECTS_ALL = []
@@ -56,6 +57,33 @@ async def update():
 @route.get('/all')
 async def all():
     return PROJECTS_ALL
+#--------------------------------------------------------------------
+@route.get('/keywords')
+def keywords():
+    days_yml = os.listdir('out')
+    days_yml = [i for i in days_yml if i != 'history.yml']
+    days_yml.sort()
+    keywords_all = {}
+    # цикл по дням
+    for day_yml in days_yml:
+        with open(f'out/{day_yml}') as f:
+            projects_day = yaml.safe_load(f)
+            # цикл по проектам
+            for key_project, item_project in projects_day.items():
+                # цикл по словам
+                for item_word in re.split(r'[.,!?;:\s]+', item_project['text']):
+                    if len(item_word) < 2:
+                        continue
+                    item_word = item_word.lower()
+                    if item_word not in keywords_all:
+                        keywords_all[item_word] = 0
+                    keywords_all[item_word] += 1
+    word_index_arr = []
+    for item_word in keywords_all.keys():
+        word_index_arr.append([ item_word, keywords_all[item_word] ])
+    return list(reversed(
+        sorted(word_index_arr, key=lambda x: x[1])
+    ))
 #--------------------------------------------------------------------
 
 PROJECTS_ALL = update_projects_all()
