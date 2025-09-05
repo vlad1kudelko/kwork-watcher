@@ -82,7 +82,7 @@
     });
 </script>
 
-<div class="container mx-auto p-10 pb-0">
+<div class="container mx-auto p-10">
     <div class="flex items-center justify-between">
         <div class="font-bold text-2xl">{projects_all_raw.length} / {projects_all_calc.length}</div>
         <div class="bg-gray-200 text-gray-800 rounded-md px-4 py-2 cursor-pointer" onclick={api_update}>{loading ? 'Обновление...' : 'Обновить'}</div>
@@ -90,7 +90,7 @@
     <input type="text" class="p-4 mt-4 block w-full bg-gray-800 outline-none" placeholder="Поиск" bind:value={search}>
 </div>
 
-<div class="p-10 pb-0 flex items-center overflow-x-scroll">
+<div class="p-10 py-0 flex items-center overflow-x-scroll">
     {#each keywords as keyword}
         <div class="bg-gray-200 text-gray-800 rounded-md px-4 py-2 m-1 text-xs">{keyword[0]}:{keyword[1]}</div>
     {/each}
