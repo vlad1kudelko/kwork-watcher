@@ -76,11 +76,11 @@ def keywords():
             for key_project, item_project in projects_day.items():
                 # цикл по словам
                 for item_word in re.split(r'[.,!?;:()/\s]+', item_project['text']):
+                    item_word = item_word.lower()
                     if len(item_word) < 2:
                         continue
                     if item_word in keywords_black_list:
                         continue
-                    item_word = item_word.lower()
                     if item_word not in keywords_all:
                         keywords_all[item_word] = 0
                     keywords_all[item_word] += 1
