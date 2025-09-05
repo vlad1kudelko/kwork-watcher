@@ -71,7 +71,7 @@ def keywords():
             # цикл по проектам
             for key_project, item_project in projects_day.items():
                 # цикл по словам
-                for item_word in re.split(r'[.,!?;:\s]+', item_project['text']):
+                for item_word in re.split(r'[.,!?;:()/\s]+', item_project['text']):
                     if len(item_word) < 2:
                         continue
                     item_word = item_word.lower()
@@ -80,6 +80,8 @@ def keywords():
                     keywords_all[item_word] += 1
     word_index_arr = []
     for item_word in keywords_all.keys():
+        if keywords_all[item_word] < 5:
+            continue
         word_index_arr.append([ item_word, keywords_all[item_word] ])
     return list(reversed(
         sorted(word_index_arr, key=lambda x: x[1])
