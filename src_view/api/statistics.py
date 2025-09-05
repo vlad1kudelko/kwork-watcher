@@ -8,6 +8,10 @@ PROJECTS_ALL = []
 
 route = APIRouter()
 
+keywords_black_list = ','.join([
+    'на,для,по,нужно,не,есть,или,что,от,за,https,будет,как,из,если,чтобы,через,все,необходимо,мы',
+]).split(',')
+
 #--------------------------------------------------------------------
 def rm_txt(txt):
     if txt:
@@ -73,6 +77,8 @@ def keywords():
                 # цикл по словам
                 for item_word in re.split(r'[.,!?;:()/\s]+', item_project['text']):
                     if len(item_word) < 2:
+                        continue
+                    if item_word in keywords_black_list:
                         continue
                     item_word = item_word.lower()
                     if item_word not in keywords_all:

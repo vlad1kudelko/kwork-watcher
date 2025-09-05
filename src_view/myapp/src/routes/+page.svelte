@@ -6,6 +6,7 @@
     let sort_enable = $state(true);
     let sort_asc    = $state(false);
     let search      = $state('');
+    let keywords    = $state([]);
 
     let projects_all_raw = $state([]);
     let projects_all_calc = $derived.by(() => {
@@ -32,6 +33,14 @@
         if (search === '') { return txt.toLowerCase(); }
         return txt.toLowerCase().replaceAll(search.toLowerCase(),
             '<span class="bg-yellow-500 text-yellow-950">' + search.toLowerCase() + '</span>');
+    }
+
+    async function keywords_update() {
+        //loading = true;
+        const res = await fetch('/api/keywords');
+        const json = await res.json();
+        keywords = json;
+        //loading = false;
     }
 
     async function api_update() {
@@ -69,6 +78,7 @@
     onMount(() => {
         api_all();
         setInterval(() => api_update(), 30*1000);
+        keywords_update();
     });
 </script>
 
@@ -78,6 +88,12 @@
         <div class="bg-gray-200 text-gray-800 rounded-md px-4 py-2 cursor-pointer" onclick={api_update}>{loading ? 'Обновление...' : 'Обновить'}</div>
     </div>
     <input type="text" class="p-4 mt-4 block w-full bg-gray-800 outline-none" placeholder="Поиск" bind:value={search}>
+</div>
+
+<div class="p-10 pb-0 flex items-center overflow-x-scroll">
+    {#each keywords as keyword}
+        <div class="bg-gray-200 text-gray-800 rounded-md px-4 py-2 m-1 text-xs">{keyword[0]}:{keyword[1]}</div>
+    {/each}
 </div>
 
 <div class="p-10">
