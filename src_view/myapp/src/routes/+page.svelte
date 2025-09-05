@@ -28,6 +28,7 @@
         return local_arr_sort;
     });
     $effect(() => {
+        search;
         projects_all_calc;
         function add_selection(el, start, len) {
             let range = new Range();
