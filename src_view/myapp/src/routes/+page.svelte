@@ -27,6 +27,23 @@
         if (!sort_asc) { return local_arr_sort.reverse(); }
         return local_arr_sort;
     });
+    $effect(() => {
+        projects_all_calc;
+        function add_selection(el, start, len) {
+            let range = new Range();
+            range.setStart(el.firstChild, start);
+            range.setEnd(el.firstChild, start + len);
+            window.getSelection().addRange(range);
+        }
+        window.getSelection().removeAllRanges();
+        for (let selector of ['.my-field-h1', '.my-field-text']) {
+            [...document.querySelectorAll(selector)].slice(0, 10).forEach((el) => {
+                if (el.innerText.toLowerCase().includes(search.toLowerCase())) {
+                    add_selection(el, el.innerText.toLowerCase().indexOf(search.toLowerCase()), search.length);
+                }
+            });
+        }
+    });
 
     async function api_update() {
         loading = true;
@@ -87,14 +104,14 @@
     </div>
     {#each projects_all_calc as project}
         <div class="grid grid-cols-19">
-            <div class="p-2 border border-gray-400 col-span-1" ><a href={project.link}>link</a></div>
-            <div class="p-2 border border-gray-400 col-span-2" >{project.h1}</div>
-            <div class="p-2 border border-gray-400 col-span-1" >{project.price_main}</div>
-            <div class="p-2 border border-gray-400 col-span-1" >{project.price_sub}</div>
-            <div class="p-2 border border-gray-400 col-span-10">{project.text}</div>
-            <div class="p-2 border border-gray-400 col-span-1" >{project.stay}</div>
-            <div class="p-2 border border-gray-400 col-span-1" >{project.reaction}</div>
-            <div class="p-2 border border-gray-400 col-span-2" >{project.date}</div>
+            <div class="p-2 border border-gray-400 col-span-1  my-field-link      "><a href={project.link}>link</a></div>
+            <div class="p-2 border border-gray-400 col-span-2  my-field-h1        ">{project.h1}</div>
+            <div class="p-2 border border-gray-400 col-span-1  my-field-price-main">{project.price_main}</div>
+            <div class="p-2 border border-gray-400 col-span-1  my-field-price-sub ">{project.price_sub}</div>
+            <div class="p-2 border border-gray-400 col-span-10 my-field-text      ">{project.text}</div>
+            <div class="p-2 border border-gray-400 col-span-1  my-field-stay      ">{project.stay}</div>
+            <div class="p-2 border border-gray-400 col-span-1  my-field-reaction  ">{project.reaction}</div>
+            <div class="p-2 border border-gray-400 col-span-2  my-field-date      ">{project.date}</div>
         </div>
     {/each}
 </div>
